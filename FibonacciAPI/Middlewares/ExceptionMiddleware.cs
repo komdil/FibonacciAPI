@@ -1,4 +1,5 @@
 ﻿using FibonacciAPI.Responses;
+using FibonacciAPI.Utilities;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -10,8 +11,8 @@ namespace FibonacciAPI.Middlewares
         const string unhundledErrorMessage = "Internal server error. Please tell customer support";
 
         private readonly RequestDelegate _next;
-        private readonly ILogger _logger;
-        public ExceptionMiddleware(RequestDelegate next, ILogger logger)
+        private readonly ILogger<ApplicationLog> _logger;
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ApplicationLog> logger)
         {
             _logger = logger;
             _next = next;
@@ -44,7 +45,10 @@ namespace FibonacciAPI.Middlewares
                 unhundledErrorMessage
             });
             var serverResponse = new ServerResponse<string>(new List<ErrorResponse>() { errorResponse });
-            return JsonConvert.SerializeObject(serverResponse, Formatting.Indented);
+            return JsonConvert.SerializeObject(serverResponse, Formatting.Indented, new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+            });
         }
     }
 }

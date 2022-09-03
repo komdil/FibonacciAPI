@@ -13,10 +13,8 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 services.AddScoped<IValidator<GetSubsequenceQuery>, GetSubsequenceQueryValidator>();
 services.AddScoped<IFibonacciSequenceService, FibonacciSequenceService>();
-
-var serviceProvider = services.BuildServiceProvider();
-var logger = serviceProvider.GetService<ILogger<ApplicationLog>>();
-services.AddSingleton(typeof(ILogger), logger);
+services.AddLogging();
+services.AddMemoryCache();
 
 var app = builder.Build();
 

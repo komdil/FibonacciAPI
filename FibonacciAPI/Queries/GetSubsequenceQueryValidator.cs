@@ -6,7 +6,7 @@ namespace FibonacciAPI.Queries
     {
         public GetSubsequenceQueryValidator()
         {
-            RuleFor(x => x.IndexOfFirstNumber).NotNull().GreaterThan(-1);
+            RuleFor(x => x.IndexOfFirstNumber).NotNull();
             RuleFor(x => x.IndexOfLastNumber).NotNull().GreaterThan(s => s.IndexOfFirstNumber);
             RuleFor(x => x.UseCache).NotNull();
             RuleFor(x => x.MaxAmountOfMemory).NotNull().GreaterThan(0);
