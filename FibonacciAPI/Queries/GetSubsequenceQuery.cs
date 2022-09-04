@@ -2,6 +2,8 @@
 {
     public class GetSubsequenceQuery
     {
+        public int? FirstGenerationTimeout { get; set; }
+
         public int? IndexOfFirstNumber { get; set; }
 
         public int? IndexOfLastNumber { get; set; }
