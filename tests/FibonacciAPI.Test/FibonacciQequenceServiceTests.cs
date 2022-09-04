@@ -5,16 +5,14 @@ using FluentValidation.Results;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using System.ComponentModel;
-using System.Runtime.InteropServices;
 
 namespace FibonacciAPI.Test
 {
     public class FibonacciSequenceServiceTests
     {
-        static readonly List<int> fibonacciNumbers = new() { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711 };
+        private static readonly List<int> fibonacciNumbers = new() { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711 };
 
-        FibonacciSequenceService CreateTestFibonacciSequenceService(IFibonacciNumberGeneratorService fibonacciNumberGeneratorService, GetSubsequenceQuery query)
+        private FibonacciSequenceService CreateTestFibonacciSequenceService(IFibonacciNumberGeneratorService fibonacciNumberGeneratorService, GetSubsequenceQuery query)
         {
             var _validatorMock = new Mock<IValidator<GetSubsequenceQuery>>();
             _validatorMock.Setup(s => s.Validate(query)).Returns(new ValidationResult());
@@ -24,12 +22,12 @@ namespace FibonacciAPI.Test
             return new FibonacciSequenceService(fibonacciNumberGeneratorService, _validatorMock.Object, mockedMemoryCache, configurationMock);
         }
 
-        FibonacciSequenceService CreateTestFibonacciSequenceService(GetSubsequenceQuery query)
+        private FibonacciSequenceService CreateTestFibonacciSequenceService(GetSubsequenceQuery query)
         {
             return CreateTestFibonacciSequenceService(new FibonacciNumberGeneratorService(), query);
         }
 
-        GetSubsequenceQuery GetQuery(int indexOfFirstNumber, int indexOfLastNumber, int maxAmountOfMemory, int firstGenerationTimeout)
+        private GetSubsequenceQuery GetQuery(int indexOfFirstNumber, int indexOfLastNumber, int maxAmountOfMemory, int firstGenerationTimeout)
         {
             return new GetSubsequenceQuery
             {
@@ -70,7 +68,7 @@ namespace FibonacciAPI.Test
             //act
             var query = GetQuery(0, 7, 100, 100);
             var mockFibonacciNumberGeneratorService = new Mock<IFibonacciNumberGeneratorService>();
-            mockFibonacciNumberGeneratorService.Setup(s => s.GenerateFirstPositionAndBeforeFirstPosition(query.IndexOfFirstNumber.Value))
+            mockFibonacciNumberGeneratorService.Setup(s => s.GenerateFibonacciNumberPositionFromIndex(query.IndexOfFirstNumber.Value))
                 .Returns(() => GetDelayTask(query.FirstGenerationTimeout.Value + 50));
             var _fibonacciSequenceService = CreateTestFibonacciSequenceService(mockFibonacciNumberGeneratorService.Object, query);
 

@@ -1,7 +1,9 @@
-﻿namespace FibonacciAPI.Services
+﻿using FibonacciAPI.Responses;
+
+namespace FibonacciAPI.Services
 {
     public interface IFibonacciNumberGeneratorService
     {
-        Task<(long numberBeforeFirstPosition, long numberOfFirstPosition)> GenerateFirstPositionAndBeforeFirstPosition(int n);
+        Task<FibonacciNumberPosition> GenerateFibonacciNumberPositionFromIndex(int n);
     }
 }

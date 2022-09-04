@@ -12,11 +12,8 @@ namespace FibonacciAPI.Controllers
     {
         private readonly IFibonacciSequenceService _fibonacciSequenceService;
 
-        private readonly ILogger<ApplicationLog> _logger;
-
-        public FibonacciController(ILogger<ApplicationLog> logger, IFibonacciSequenceService fibonacciSequenceService)
+        public FibonacciController(IFibonacciSequenceService fibonacciSequenceService)
         {
-            _logger = logger;
             _fibonacciSequenceService = fibonacciSequenceService;
         }
 

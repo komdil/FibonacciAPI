@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace FibonacciAPI.Extentions
+namespace FibonacciAPI.Utilities
 {
     public class Helper
     {

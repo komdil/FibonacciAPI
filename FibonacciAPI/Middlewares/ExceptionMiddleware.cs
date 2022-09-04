@@ -7,9 +7,6 @@ namespace FibonacciAPI.Middlewares
 {
     public class ExceptionMiddleware
     {
-        const string unhundledErrorUnknownProperty = "No property";
-        const string unhundledErrorMessage = "Internal server error. Please tell customer support";
-
         private readonly RequestDelegate _next;
         private readonly ILogger<ApplicationLog> _logger;
         public ExceptionMiddleware(RequestDelegate next, ILogger<ApplicationLog> logger)
@@ -40,9 +37,9 @@ namespace FibonacciAPI.Middlewares
 
         string GetUnhundledErrorString()
         {
-            var errorResponse = new ErrorResponse(unhundledErrorUnknownProperty, new List<string>
+            var errorResponse = new ErrorResponse(Constants.UnhundledErrorUnknownProperty, new List<string>
             {
-                unhundledErrorMessage
+                Constants.UnhundledErrorMessage
             });
             var serverResponse = ServerResponse<string>.GetFailResponse(new List<ErrorResponse>() { errorResponse });
             return JsonConvert.SerializeObject(serverResponse, Formatting.Indented, new JsonSerializerSettings()

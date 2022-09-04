@@ -1,6 +1,7 @@
 ﻿using FibonacciAPI.Extentions;
 using FibonacciAPI.Queries;
 using FibonacciAPI.Responses;
+using FibonacciAPI.Utilities;
 using FluentValidation;
 using Microsoft.Extensions.Caching.Memory;
 using System.Runtime.InteropServices;
@@ -30,14 +31,14 @@ namespace FibonacciAPI.Services
             if (TryGetFromCache(query, out List<long> fromCache))
                 return ServerResponse<List<long>>.GetSuccessResponse(fromCache);
 
-            var firstNumberGenerationTask = _fibonacciNumberGeneratorService.GenerateFirstPositionAndBeforeFirstPosition(query.IndexOfFirstNumber.Value);
+            var firstPositionGenerationTask = _fibonacciNumberGeneratorService.GenerateFibonacciNumberPositionFromIndex(query.IndexOfFirstNumber.Value);
             using (var timeoutCancellationTokenSource = new CancellationTokenSource())
             {
-                if (await Task.WhenAny(firstNumberGenerationTask, Task.Delay(query.FirstGenerationTimeout.Value, timeoutCancellationTokenSource.Token)) == firstNumberGenerationTask)
+                if (await Task.WhenAny(firstPositionGenerationTask, Task.Delay(query.FirstGenerationTimeout.Value, timeoutCancellationTokenSource.Token)) == firstPositionGenerationTask)
                 {
                     timeoutCancellationTokenSource.Cancel();
-                    (long numberBeforeFirstPosition, long numberOfFirstPosition) = firstNumberGenerationTask.Result;
-                    List<long> numbers = await GetSequences(query, numberBeforeFirstPosition, numberOfFirstPosition);
+                    var firstPosition = firstPositionGenerationTask.Result;
+                    List<long> numbers = GetSequences(query, firstPosition.FirstNumberPosition, firstPosition.SecondNumberPosition);
                     SetCache(query, numbers);
 
                     return ServerResponse<List<long>>.GetSuccessResponse(numbers);
@@ -51,7 +52,7 @@ namespace FibonacciAPI.Services
 
         public const string TimeoutErrorPropertyName = "Timeout";
         public const string TimeoutError = "Timeout during generation first number";
-        ServerResponse<List<long>> GetTimeOutResponse()
+        private ServerResponse<List<long>> GetTimeOutResponse()
         {
             return ServerResponse<List<long>>.GetFailResponse(new List<ErrorResponse>
             {
@@ -59,7 +60,7 @@ namespace FibonacciAPI.Services
             });
         }
 
-        async Task<List<long>> GetSequences(GetSubsequenceQuery query, long numberBeforeFirstPosition, long numberOfFirstPosition)
+        private List<long> GetSequences(GetSubsequenceQuery query, long numberBeforeFirstPosition, long numberOfFirstPosition)
         {
             List<long> results = new() { numberOfFirstPosition };
             int memorySize = Marshal.SizeOf(numberOfFirstPosition);
@@ -76,7 +77,7 @@ namespace FibonacciAPI.Services
             return results;
         }
 
-        bool TryGetFromCache(GetSubsequenceQuery query, out List<long> fromCache)
+        private bool TryGetFromCache(GetSubsequenceQuery query, out List<long> fromCache)
         {
             fromCache = null;
             if (query.UseCache.HasValue && query.UseCache.Value
@@ -87,7 +88,7 @@ namespace FibonacciAPI.Services
             return false;
         }
 
-        void SetCache(GetSubsequenceQuery query, List<long> numbers)
+        private void SetCache(GetSubsequenceQuery query, List<long> numbers)
         {
             if (query.UseCache.HasValue && query.UseCache.Value)
             {
@@ -99,7 +100,7 @@ namespace FibonacciAPI.Services
             }
         }
 
-        bool TryGetCacheTimeoutFromConfiguration(out TimeSpan? timeSpan)
+        private bool TryGetCacheTimeoutFromConfiguration(out TimeSpan? timeSpan)
         {
             timeSpan = null;
             var timeOut = _configuration.GetValue<int?>(Constants.TimeOutConfigurationKey);
