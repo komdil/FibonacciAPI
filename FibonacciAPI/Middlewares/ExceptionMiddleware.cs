@@ -44,7 +44,7 @@ namespace FibonacciAPI.Middlewares
             {
                 unhundledErrorMessage
             });
-            var serverResponse = new ServerResponse<string>(new List<ErrorResponse>() { errorResponse });
+            var serverResponse = ServerResponse<string>.GetFailResponse(new List<ErrorResponse>() { errorResponse });
             return JsonConvert.SerializeObject(serverResponse, Formatting.Indented, new JsonSerializerSettings()
             {
                 NullValueHandling = NullValueHandling.Ignore,

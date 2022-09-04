@@ -4,19 +4,23 @@ namespace FibonacciAPI.Responses
 {
     public class ServerResponse<T>
     {
-        /// <summary>
-        /// Return with success response
-        /// </summary>
-        public ServerResponse(T data)
+        public static ServerResponse<T> GetSuccessResponse(T data)
+        {
+            return new ServerResponse<T>(data);
+        }
+
+        public static ServerResponse<T> GetFailResponse(IReadOnlyList<ErrorResponse> messages)
+        {
+            return new ServerResponse<T>(messages);
+        }
+
+        ServerResponse(T data)
         {
             Success = true;
             Data = data;
         }
 
-        /// <summary>
-        /// Return with fail response
-        /// </summary>
-        public ServerResponse(IReadOnlyList<ErrorResponse> messages)
+        ServerResponse(IReadOnlyList<ErrorResponse> messages)
         {
             Success = false;
             Messages = messages;

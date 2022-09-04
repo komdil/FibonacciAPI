@@ -5,6 +5,6 @@ namespace FibonacciAPI.Services
 {
     public interface IFibonacciSequenceService
     {
-        Task<ServerResponse<List<int>>> GetSubsequence(GetSubsequenceQuery query);
+        Task<ServerResponse<List<long>>> GetSubsequence(GetSubsequenceQuery query);
     }
 }
