@@ -4,6 +4,6 @@ namespace FibonacciAPI.Services
 {
     public interface IFibonacciNumberGeneratorService
     {
-        Task<FibonacciNumberPosition> GenerateFibonacciNumberPositionFromIndex(int n);
+        Task<FibonacciNumberPosition> GenerateFibonacciNumberPositionFromIndexAsync(int n);
     }
 }

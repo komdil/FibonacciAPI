@@ -22,7 +22,7 @@ namespace FibonacciAPI.Services
             _fibonacciNumberGeneratorService = fibonacciNumberGeneratorService;
         }
 
-        public async Task<ServerResponse<List<long>>> GetSubsequence(GetSubsequenceQuery query)
+        public async Task<ServerResponse<List<long>>> GetSubsequenceAsync(GetSubsequenceQuery query)
         {
             var validateStatus = _fibonacciSequenceValidator.Validate(query);
             if (!validateStatus.IsValid)
@@ -31,7 +31,7 @@ namespace FibonacciAPI.Services
             if (TryGetFromCache(query, out List<long> fromCache))
                 return ServerResponse<List<long>>.GetSuccessResponse(fromCache);
 
-            var firstPositionGenerationTask = _fibonacciNumberGeneratorService.GenerateFibonacciNumberPositionFromIndex(query.IndexOfFirstNumber.Value);
+            var firstPositionGenerationTask = _fibonacciNumberGeneratorService.GenerateFibonacciNumberPositionFromIndexAsync(query.IndexOfFirstNumber.Value);
             using (var timeoutCancellationTokenSource = new CancellationTokenSource())
             {
                 if (await Task.WhenAny(firstPositionGenerationTask, Task.Delay(query.FirstGenerationTimeout.Value, timeoutCancellationTokenSource.Token)) == firstPositionGenerationTask)

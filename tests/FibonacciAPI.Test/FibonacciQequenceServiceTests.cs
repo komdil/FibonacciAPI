@@ -44,20 +44,19 @@ namespace FibonacciAPI.Test
         public async Task FibonacciSequenceService_ShouldReturnNumbersAsExpected()
         {
             //act
-            int sizeOfTenNumbersInBytes = 10 * 8;//10 numbers with 8 byte size
-            var query = GetQuery(0, 19, sizeOfTenNumbersInBytes, 3000);
+            var query = GetQuery(0, 7, 100, 3000);
             var _fibonacciSequenceService = CreateTestFibonacciSequenceService(query);
 
             //arrange
-            var response = await _fibonacciSequenceService.GetSubsequence(query);
+            var response = await _fibonacciSequenceService.GetSubsequenceAsync(query);
 
             //assert
             Assert.That(response.Success, Is.True);
 
             var numbers = response.Data;
-            Assert.That(numbers, Has.Count.EqualTo(10));
+            Assert.That(numbers, Has.Count.EqualTo(8));
 
-            for (int i = 0; i <= 9; i++)
+            for (int i = 0; i <= 7; i++)
             {
                 Assert.That(numbers[i], Is.EqualTo(fibonacciNumbers[i]));
             }
@@ -69,12 +68,12 @@ namespace FibonacciAPI.Test
             //act
             var query = GetQuery(0, 7, 100, 100);
             var mockFibonacciNumberGeneratorService = new Mock<IFibonacciNumberGeneratorService>();
-            mockFibonacciNumberGeneratorService.Setup(s => s.GenerateFibonacciNumberPositionFromIndex(query.IndexOfFirstNumber.Value))
+            mockFibonacciNumberGeneratorService.Setup(s => s.GenerateFibonacciNumberPositionFromIndexAsync(query.IndexOfFirstNumber.Value))
                 .Returns(() => GetDelayTask(query.FirstGenerationTimeout.Value + 50));
             var _fibonacciSequenceService = CreateTestFibonacciSequenceService(mockFibonacciNumberGeneratorService.Object, query);
 
             //arrange
-            var response = await _fibonacciSequenceService.GetSubsequence(query);
+            var response = await _fibonacciSequenceService.GetSubsequenceAsync(query);
 
             //assert
             Assert.That(response.Success, Is.False);
@@ -91,19 +90,20 @@ namespace FibonacciAPI.Test
         public async Task FibonacciSequenceService_ShouldAbortExecution_WhenNumbersAreOutOfMemory()
         {
             //act
-            var query = GetQuery(0, 7, 100, 3000);
+            int sizeOfTenNumbersInBytes = 10 * 8;//10 numbers with 8 byte size
+            var query = GetQuery(0, 19, sizeOfTenNumbersInBytes, 3000);
             var _fibonacciSequenceService = CreateTestFibonacciSequenceService(query);
 
             //arrange
-            var response = await _fibonacciSequenceService.GetSubsequence(query);
+            var response = await _fibonacciSequenceService.GetSubsequenceAsync(query);
 
             //assert
             Assert.That(response.Success, Is.True);
 
             var numbers = response.Data;
-            Assert.That(numbers, Has.Count.EqualTo(8));
+            Assert.That(numbers, Has.Count.EqualTo(10));
 
-            for (int i = 0; i <= 7; i++)
+            for (int i = 0; i <= 9; i++)
             {
                 Assert.That(numbers[i], Is.EqualTo(fibonacciNumbers[i]));
             }

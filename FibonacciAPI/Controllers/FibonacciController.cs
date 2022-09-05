@@ -20,7 +20,7 @@ namespace FibonacciAPI.Controllers
         [HttpGet(Name = "Numbers")]
         public async Task<ServerResponse<List<long>>> GetNumbers([FromQuery] GetSubsequenceQuery getSubsequenceQuery)
         {
-            return await _fibonacciSequenceService.GetSubsequence(getSubsequenceQuery);
+            return await _fibonacciSequenceService.GetSubsequenceAsync(getSubsequenceQuery);
         }
     }
 }
