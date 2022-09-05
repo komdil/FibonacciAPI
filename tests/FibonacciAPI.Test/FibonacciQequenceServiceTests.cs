@@ -1,4 +1,5 @@
 ﻿using FibonacciAPI.Queries;
+using FibonacciAPI.Responses;
 using FibonacciAPI.Services;
 using FluentValidation;
 using FluentValidation.Results;
@@ -79,10 +80,10 @@ namespace FibonacciAPI.Test
             Assert.That(response.Success, Is.False);
             Assert.That(response.Messages.Any(s => s.PropertyName == FibonacciSequenceService.TimeoutErrorPropertyName), Is.True);
 
-            async Task<(long numberBeforeFirstPosition, long numberOfFirstPosition)> GetDelayTask(int delay)
+            async Task<FibonacciNumberPosition> GetDelayTask(int delay)
             {
                 await Task.Delay(delay);
-                return (1, 1);
+                return new(1, 1);
             }
         }
 
