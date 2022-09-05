@@ -13,6 +13,8 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 services.AddScoped<IValidator<GetSubsequenceQuery>, GetSubsequenceQueryValidator>();
 services.AddScoped<IFibonacciSequenceService, FibonacciSequenceService>();
+services.AddScoped<IFibonacciPositionGeneratorService, FibonacciPositionGeneratorService>();
+services.AddScoped<IFibonacciNextNumberGeneratorService, FibonacciNextNumberGeneratorService>();
 services.AddLogging();
 services.AddMemoryCache();
 

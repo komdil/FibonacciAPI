@@ -8,8 +8,8 @@ namespace FibonacciAPI.Middlewares
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<ApplicationLog> _logger;
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ApplicationLog> logger)
+        private readonly ILogger<ExceptionMiddleware> _logger;
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _logger = logger;
             _next = next;
@@ -24,22 +24,22 @@ namespace FibonacciAPI.Middlewares
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Internal server error");
-                await HandleExceptionAsync(httpContext, ex);
+                await HandleExceptionAsync(httpContext);
             }
         }
 
-        async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        async Task HandleExceptionAsync(HttpContext context)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            await context.Response.WriteAsync(GetUnhundledErrorString());
+            await context.Response.WriteAsync(GetUnhandledErrorString());
         }
 
-        string GetUnhundledErrorString()
+        string GetUnhandledErrorString()
         {
-            var errorResponse = new ErrorResponse(Constants.UnhundledErrorUnknownProperty, new List<string>
+            var errorResponse = new ErrorResponse(Constants.UnhandledErrorUnknownProperty, new List<string>
             {
-                Constants.UnhundledErrorMessage
+                Constants.UnhandledErrorMessage
             });
             var serverResponse = ServerResponse<string>.GetFailResponse(new List<ErrorResponse>() { errorResponse });
             return JsonConvert.SerializeObject(serverResponse, Formatting.Indented, new JsonSerializerSettings()
