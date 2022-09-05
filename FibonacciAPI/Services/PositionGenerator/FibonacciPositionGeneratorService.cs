@@ -1,6 +1,7 @@
 ﻿using FibonacciAPI.Responses;
+using FibonacciAPI.Services.NumberGenerator;
 
-namespace FibonacciAPI.Services
+namespace FibonacciAPI.Services.PositionGenerator
 {
     public class FibonacciPositionGeneratorService : IFibonacciPositionGeneratorService
     {

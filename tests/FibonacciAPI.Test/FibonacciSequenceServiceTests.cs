@@ -1,9 +1,10 @@
 ﻿using FibonacciAPI.Queries;
-using FibonacciAPI.Services;
+using FibonacciAPI.Services.CacheService;
+using FibonacciAPI.Services.NumberGenerator;
+using FibonacciAPI.Services.PositionGenerator;
+using FibonacciAPI.Services.SequenceGenerator;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Moq;
 
 namespace FibonacciAPI.Test
@@ -15,10 +16,9 @@ namespace FibonacciAPI.Test
             var _validatorMock = new Mock<IValidator<GetSubsequenceQuery>>();
             _validatorMock.Setup(s => s.ValidateAsync(query, default)).Returns(Task.FromResult(new ValidationResult()));
 
-            var mockedMemoryCache = Mock.Of<IMemoryCache>();
-            var configurationMock = Mock.Of<IConfiguration>();
+            var mockedCacheService = Mock.Of<IFibonacciCacheService>();
             var nextNumberGeneratorService = new FibonacciNextNumberGeneratorService();
-            return new FibonacciSequenceService(fibonacciNumberGeneratorService, nextNumberGeneratorService, _validatorMock.Object, mockedMemoryCache, configurationMock);
+            return new FibonacciSequenceService(fibonacciNumberGeneratorService, nextNumberGeneratorService, _validatorMock.Object, mockedCacheService);
         }
 
         private FibonacciSequenceService CreateTestFibonacciSequenceService(GetSubsequenceQuery query)
@@ -27,17 +27,7 @@ namespace FibonacciAPI.Test
             return CreateTestFibonacciSequenceService(new FibonacciPositionGeneratorService(nextNumberGeneratorService), query);
         }
 
-        private GetSubsequenceQuery GetQuery(int indexOfFirstNumber, int indexOfLastNumber, int maxAmountOfMemory, int firstGenerationTimeout)
-        {
-            return new GetSubsequenceQuery
-            {
-                IndexOfFirstNumber = indexOfFirstNumber,
-                IndexOfLastNumber = indexOfLastNumber,
-                FirstGenerationTimeout = firstGenerationTimeout,
-                MaxAmountOfMemory = maxAmountOfMemory,
-                UseCache = false
-            };
-        }
+       
 
         [TestCase(0, 7)]
         [TestCase(3, 9)]

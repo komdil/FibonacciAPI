@@ -1,6 +1,6 @@
 using FibonacciAPI.Queries;
 using FibonacciAPI.Responses;
-using FibonacciAPI.Services;
+using FibonacciAPI.Services.SequenceGenerator;
 using FibonacciAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 

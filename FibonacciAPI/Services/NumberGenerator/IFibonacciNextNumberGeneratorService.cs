@@ -1,4 +1,4 @@
-﻿namespace FibonacciAPI.Services
+﻿namespace FibonacciAPI.Services.NumberGenerator
 {
     public interface IFibonacciNextNumberGeneratorService
     {

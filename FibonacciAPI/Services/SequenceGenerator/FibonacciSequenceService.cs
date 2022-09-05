@@ -1,30 +1,21 @@
-﻿using FibonacciAPI.Extentions;
-using FibonacciAPI.Queries;
-using FibonacciAPI.Responses;
-using FibonacciAPI.Utilities;
-using FluentValidation;
-using Microsoft.Extensions.Caching.Memory;
-using FibonacciAPI.Cache;
+﻿using FibonacciAPI.Services.CacheService;
 
-namespace FibonacciAPI.Services
+namespace FibonacciAPI.Services.SequenceGenerator
 {
     public class FibonacciSequenceService : IFibonacciSequenceService
     {
-        private readonly IMemoryCache _memoryCache;
-        private readonly IConfiguration _configuration;
         private readonly IValidator<GetSubsequenceQuery> _fibonacciSequenceValidator;
         private readonly IFibonacciPositionGeneratorService _fibonacciNumberGeneratorService;
         private readonly IFibonacciNextNumberGeneratorService _fibonacciNextNumberGeneratorService;
+        private readonly IFibonacciCacheService _fibonacciCacheService;
         public FibonacciSequenceService(
             IFibonacciPositionGeneratorService fibonacciNumberGeneratorService,
             IFibonacciNextNumberGeneratorService fibonacciNextNumberGeneratorService,
             IValidator<GetSubsequenceQuery> validator,
-            IMemoryCache memoryCache,
-            IConfiguration configuration)
+            IFibonacciCacheService fibonacciCacheService)
         {
             _fibonacciSequenceValidator = validator;
-            _memoryCache = memoryCache;
-            _configuration = configuration;
+            _fibonacciCacheService = fibonacciCacheService;
             _fibonacciNumberGeneratorService = fibonacciNumberGeneratorService;
             _fibonacciNextNumberGeneratorService = fibonacciNextNumberGeneratorService;
         }
@@ -35,7 +26,7 @@ namespace FibonacciAPI.Services
             if (!validateStatus.IsValid)
                 return ServerResponse<List<long>>.GetFailResponse(validateStatus.GetErrors());
 
-            if (TryGetFromCache(query, out List<long> fromCache))
+            if (_fibonacciCacheService.TryGetValue(query, out List<long> fromCache))
                 return ServerResponse<List<long>>.GetSuccessResponse(fromCache);
 
             try
@@ -43,7 +34,7 @@ namespace FibonacciAPI.Services
                 using var timeoutCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMilliseconds(query.FirstGenerationTimeout));
                 var firstPositionGenerationTask = await _fibonacciNumberGeneratorService.GenerateFibonacciNumberPositionFromIndexAsync(query.IndexOfFirstNumber, timeoutCancellationTokenSource.Token);
                 List<long> numbers = await GetSequences(query, firstPositionGenerationTask.FirstNumberPosition, firstPositionGenerationTask.SecondNumberPosition);
-                SetCache(query, numbers);
+                _fibonacciCacheService.Set(query, numbers);
                 return ServerResponse<List<long>>.GetSuccessResponse(numbers);
             }
             catch (TaskCanceledException)
@@ -73,50 +64,6 @@ namespace FibonacciAPI.Services
                     break;
             }
             return results;
-        }
-
-        private bool TryGetFromCache(GetSubsequenceQuery query, out List<long> fromCache)
-        {
-            fromCache = null;
-
-            if (query.UseCache
-                && _memoryCache.TryGetValue(Constants.CacheKey, out FibonnaciCacheEntry cacheEntry)
-                && cacheEntry.StartValue >= query.IndexOfFirstNumber && cacheEntry.EndValue <= query.IndexOfLastNumber)
-            {
-                // fromCache = cacheEntry.Sequence.Skip(DifferenceBetweenOurValues).Take(UntillLimitReached);
-                return true;
-            }
-            return false;
-        }
-
-        private void SetCache(GetSubsequenceQuery query, List<long> numbers)
-        {
-            if (query.UseCache && query.UseCache)
-            {
-                MemoryCacheEntryOptions memoryCacheEntryOptions = new();
-                if (TryGetCacheTimeoutFromConfiguration(out TimeSpan? timeOut))
-                    memoryCacheEntryOptions.SetAbsoluteExpiration(timeOut.Value);
-
-                var cacheEntry = new FibonnaciCacheEntry
-                {
-                    StartValue = query.IndexOfFirstNumber,
-                    EndValue = query.IndexOfLastNumber,
-                    Sequence = numbers
-                };
-                _memoryCache.Set(Constants.CacheKey, cacheEntry, memoryCacheEntryOptions);
-            }
-        }
-
-        private bool TryGetCacheTimeoutFromConfiguration(out TimeSpan? timeSpan)
-        {
-            timeSpan = null;
-            var timeOut = _configuration.GetValue<int?>(Constants.TimeOutConfigurationKey);
-            if (timeOut.HasValue)
-            {
-                timeSpan = TimeSpan.FromMinutes(timeOut.Value);
-                return true;
-            }
-            return false;
         }
     }
 }

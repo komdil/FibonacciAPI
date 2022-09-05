@@ -1,7 +1,7 @@
 ﻿using FibonacciAPI.Queries;
 using FibonacciAPI.Responses;
 
-namespace FibonacciAPI.Services
+namespace FibonacciAPI.Services.SequenceGenerator
 {
     public interface IFibonacciSequenceService
     {

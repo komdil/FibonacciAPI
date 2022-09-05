@@ -1,4 +1,5 @@
-﻿using FibonacciAPI.Services;
+﻿using FibonacciAPI.Services.NumberGenerator;
+using FibonacciAPI.Services.PositionGenerator;
 using Moq;
 
 namespace FibonacciAPI.Test

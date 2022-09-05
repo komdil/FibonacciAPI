@@ -1,0 +1,11 @@
+﻿global using FibonacciAPI.Extentions;
+global using FibonacciAPI.Queries;
+global using FibonacciAPI.Responses;
+global using FibonacciAPI.Utilities;
+global using FluentValidation;
+global using Microsoft.Extensions.Caching.Memory;
+global using FibonacciAPI.Cache;
+global using FibonacciAPI.Services.PositionGenerator;
+global using FibonacciAPI.Services.NumberGenerator;
+global using FibonacciAPI.Services.SequenceGenerator;
+global using System.Linq;

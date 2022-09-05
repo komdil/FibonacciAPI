@@ -1,6 +1,8 @@
 using FibonacciAPI.Middlewares;
 using FibonacciAPI.Queries;
-using FibonacciAPI.Services;
+using FibonacciAPI.Services.NumberGenerator;
+using FibonacciAPI.Services.PositionGenerator;
+using FibonacciAPI.Services.SequenceGenerator;
 using FibonacciAPI.Utilities;
 using FluentValidation;
 var builder = WebApplication.CreateBuilder(args);
