@@ -1,7 +1,4 @@
-﻿using FibonacciAPI.Responses;
-using FibonacciAPI.Services.NumberGenerator;
-
-namespace FibonacciAPI.Services.PositionGenerator
+﻿namespace FibonacciAPI.Services.PositionGenerator
 {
     public class FibonacciPositionGeneratorService : IFibonacciPositionGeneratorService
     {

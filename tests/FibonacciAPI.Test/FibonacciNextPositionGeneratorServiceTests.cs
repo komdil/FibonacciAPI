@@ -66,7 +66,7 @@ namespace FibonacciAPI.Test
         {
             //arrange
             var timeOutMilliSeconds = 200;
-            var _nextNumberGeneration = new TestDelayedNumberGeneratorService(timeOutMilliSeconds);
+            var _nextNumberGeneration = MockWithTimeout(timeOutMilliSeconds);
             var _fibonacciPositionGeneratorService = GetFibonacciPositionGeneratorService(_nextNumberGeneration);
 
             //act
@@ -78,21 +78,18 @@ namespace FibonacciAPI.Test
                 }
             });
         }
-    }
 
-    class TestDelayedNumberGeneratorService : IFibonacciNextNumberGeneratorService
-    {
-        readonly int delay;
-
-        public TestDelayedNumberGeneratorService(int delay)
+        IFibonacciNextNumberGeneratorService MockWithTimeout(int delay)
         {
-            this.delay = delay;
-        }
-
-        public long GenerateNextNumber(long previousNumber, long currentNumber)
-        {
-            Task.Delay(delay).Wait();
-            return previousNumber + currentNumber;
+            var _nextNumberGeneration = new Mock<IFibonacciNextNumberGeneratorService>();
+            _nextNumberGeneration
+                .Setup(mc => mc.GenerateNextNumber(It.IsAny<long>(), It.IsAny<long>()))
+                .Returns((long n1, long n2) =>
+                {
+                    Task.Delay(delay).Wait();
+                    return n1 + n2;
+                });
+            return _nextNumberGeneration.Object;
         }
     }
 }
