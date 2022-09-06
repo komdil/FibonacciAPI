@@ -9,7 +9,7 @@ public class FibonnaciCacheEntry
         Sequence = sequence;
     }
 
-    public int IndexOfFirstProperty { get; }
-    public int IndexOfLastProperty { get; }
+    public int IndexOfFirstProperty { get; set; }
+    public int IndexOfLastProperty { get; set; }
     public List<long> Sequence { get; }
 }

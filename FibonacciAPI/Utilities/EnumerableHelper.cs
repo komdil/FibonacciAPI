@@ -2,7 +2,7 @@
 {
     public static class EnumerableHelper
     {
-        public static List<long> RangeLong(long start, long end)
+        public static List<long> RangeLong(int start, int end)
         {
             List<long> longs = new();
 

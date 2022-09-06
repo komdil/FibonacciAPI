@@ -37,7 +37,7 @@ namespace FibonacciAPI.Services.SequenceGenerator
                 _fibonacciCacheService.Set(query, numbers);
                 return ServerResponse<List<long>>.GetSuccessResponse(numbers);
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
                 return GetTimeOutResponse();
             }

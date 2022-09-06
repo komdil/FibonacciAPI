@@ -1,10 +1,5 @@
 using FibonacciAPI.Middlewares;
-using FibonacciAPI.Queries;
-using FibonacciAPI.Services.NumberGenerator;
-using FibonacciAPI.Services.PositionGenerator;
-using FibonacciAPI.Services.SequenceGenerator;
-using FibonacciAPI.Utilities;
-using FluentValidation;
+using FibonacciAPI.Services.CacheService;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +12,7 @@ services.AddScoped<IValidator<GetSubsequenceQuery>, GetSubsequenceQueryValidator
 services.AddScoped<IFibonacciSequenceService, FibonacciSequenceService>();
 services.AddScoped<IFibonacciPositionGeneratorService, FibonacciPositionGeneratorService>();
 services.AddScoped<IFibonacciNextNumberGeneratorService, FibonacciNextNumberGeneratorService>();
+services.AddScoped<IFibonacciCacheService, FibonacciCacheService>();
 services.AddLogging();
 services.AddMemoryCache();
 

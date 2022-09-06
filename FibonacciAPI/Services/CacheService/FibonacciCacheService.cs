@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using FibonacciAPI.Cache;
+using Microsoft.Extensions.Caching.Memory;
+using System.Linq;
 
 namespace FibonacciAPI.Services.CacheService
 {
@@ -18,10 +20,10 @@ namespace FibonacciAPI.Services.CacheService
             numbers = null;
             if (query.UseCache && _memoryCache.TryGetValue(Constants.CacheKey, out FibonacciCache cache))
             {
-                var cacheEnry = cache.CacheEntries.FirstOrDefault(s => s.IndexOfFirstProperty >= query.IndexOfFirstNumber && s.IndexOfLastProperty <= query.IndexOfLastNumber);
+                var cacheEnry = cache.CacheEntries.FirstOrDefault(s => s.IndexOfFirstProperty <= query.IndexOfFirstNumber && s.IndexOfLastProperty >= query.IndexOfLastNumber);
                 if (cacheEnry != null)
                 {
-                    numbers = cacheEnry.Sequence.Skip(query.IndexOfFirstNumber).Take(query.IndexOfLastNumber).ToList();
+                    numbers = cacheEnry.Sequence.Skip(query.IndexOfFirstNumber - cacheEnry.IndexOfFirstProperty).Take(query.IndexOfLastNumber - query.IndexOfFirstNumber + 1).ToList();
                     return true;
                 }
             }
@@ -38,7 +40,27 @@ namespace FibonacciAPI.Services.CacheService
 
                 if (_memoryCache.TryGetValue(Constants.CacheKey, out FibonacciCache cache))
                 {
-                    //TODO
+                    var existingEntry = cache.CacheEntries.FirstOrDefault(s => query.IndexOfLastNumber <= s.IndexOfLastProperty &&
+                    query.IndexOfLastNumber >= s.IndexOfFirstProperty);
+                    if (existingEntry != null)
+                    {
+                        var itemsToInsert = numbers.Take(existingEntry.IndexOfFirstProperty - query.IndexOfFirstNumber + 1);
+                        existingEntry.Sequence.InsertRange(0, itemsToInsert);
+                        existingEntry.IndexOfFirstProperty = query.IndexOfFirstNumber;
+                        return;
+                    }
+
+                    existingEntry = cache.CacheEntries.FirstOrDefault(s => query.IndexOfFirstNumber >= s.IndexOfFirstProperty &&
+                    query.IndexOfFirstNumber <= s.IndexOfLastProperty);
+                    if (existingEntry != null)
+                    {
+                        var itemsToAdd = numbers.Skip(existingEntry.IndexOfLastProperty - query.IndexOfFirstNumber + 1);
+                        existingEntry.Sequence.AddRange(itemsToAdd);
+                        existingEntry.IndexOfFirstProperty = query.IndexOfLastNumber;
+                        return;
+                    }
+                    cache.CacheEntries.Add(new
+                        FibonnaciCacheEntry(query.IndexOfFirstNumber, query.IndexOfLastNumber, numbers));
                 }
                 else
                 {
